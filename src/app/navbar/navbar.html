@@ -1,0 +1,29 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <a routerLink="/" class="brand-link">
+                <span class="weather-icon">🌤️</span>
+                <span class="brand-text">WeatherApp</span>
+            </a>
+        </div>
+
+        <button class="mobile-menu-btn" (click)="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-menu" [class.active]="isMenuOpen()">
+            <ul class="nav-links">
+                <li><a routerLink="/" (click)="toggleMenu()">Home</a></li>
+                @if (authService.isAuthenticated()) {
+                <li><a routerLink="/weather" (click)="toggleMenu()">Weather</a></li>
+                <li><button class="logout-btn" (click)="logout()">Logout</button></li>
+                } @else {
+                <li><a routerLink="/login" (click)="toggleMenu()">Login</a></li>
+                <li><a routerLink="/register" (click)="toggleMenu()">Register</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

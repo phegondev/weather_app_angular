@@ -1,0 +1,56 @@
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo">
+                <span class="logo-icon">🌤️</span>
+                <span class="logo-text">WeatherApp</span>
+            </div>
+            <h2>Welcome Back</h2>
+            <p>Login to access your weather dashboard</p>
+        </div>
+
+        @if (error()) {
+        <div class="alert alert-error">
+            <span class="alert-icon">⚠️</span>
+            {{ error() }}
+        </div>
+        }
+
+
+        <form (ngSubmit)="onSubmit()" class="login-form">
+            <div class="form-group">
+                <label for="email">
+                    <span class="label-icon">📧</span>
+                    Email Address
+                </label>
+                <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Enter your email" required
+                    autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <span class="label-icon">🔒</span>
+                    Password
+                </label>
+                <div class="password-wrapper">
+                    <input [type]="showPassword() ? 'text' : 'password'" id="password" [(ngModel)]="password"
+                        name="password" placeholder="Enter your password" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+                        {{ showPassword() ? '🙈' : '👁️' }}
+                    </button>
+                </div>
+            </div>
+
+
+            <button type="submit" class="btn-submit" [disabled]="loading()">
+                {{ loading() ? 'Logging in...' : 'Login' }}
+            </button>
+
+        </form>
+
+
+        <div class="login-footer">
+            <p>Don't have an account? <a routerLink="/register">Create one here</a></p>
+        </div>
+    </div>
+</div>
