@@ -1,0 +1,187 @@
+<div class="weather-container">
+    <div class="weather-content">
+        <!-- Header Section -->
+        <div class="weather-header">
+            <h1 class="page-title">Weather Forecast</h1>
+            <p class="page-subtitle">Search by city or country name to get current weather conditions</p>
+        </div>
+
+
+        <!-- Search Section -->
+        <div class="search-section">
+
+            <!-- search input box -->
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" [(ngModel)]="searchQuery" (keyup)="handleKeyPress($event)"
+                        placeholder="Search by city (e.g., London) or country (e.g., Japan)..." class="search-input">
+                    <button (click)="searchWeather()" class="search-button" [disabled]="loading()">
+                        {{ loading() ? 'Searching...' : 'Search' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Popular Locations -->
+            <div class="popular-section">
+                <h3 class="section-label">🌍 Popular Locations</h3>
+                <div class="popular-grid">
+                    @for (location of popularLocations; track location.name) {
+                    <button class="popular-btn" (click)="selectLocation(location.name)">
+                        <span class="location-icon">{{ location.type === 'city' ? '🏙️' : '🇺🇳' }}</span>
+                        {{ location.name }}
+                    </button>
+                    }
+                </div>
+            </div>
+
+
+            <!-- Recent Searches -->
+            @if (recentSearches().length > 0) {
+            <div class="recent-section">
+                <div class="recent-header">
+                    <h3 class="section-label">🕒 Recent Searches</h3>
+                    <button class="clear-btn" (click)="clearRecentSearches()">Clear All</button>
+                </div>
+                <div class="recent-list">
+                    @for (city of recentSearches(); track city) {
+                    <button class="recent-btn" (click)="selectLocation(city)">
+                        🔄 {{ city }}
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Error Message -->
+        @if (error()) {
+        <div class="error-card">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <p class="error-message">{{ error() }}</p>
+            </div>
+        </div>
+        }
+
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="loading-container">
+            <div class="weather-loader">
+                <div class="loader-icon">🌤️</div>
+                <p>Fetching weather data...</p>
+            </div>
+        </div>
+        }
+
+
+
+        <!-- Weather Display -->
+        @if (weatherData() && !loading()) {
+        <div class="weather-display">
+            <!-- Main Weather Card -->
+            <div class="weather-main-card">
+                <div class="weather-header-info">
+                    <div>
+                        <h2 class="city-name">{{ weatherData()?.city }}</h2>
+                        <p class="weather-description">{{ weatherData()?.description }}</p>
+                    </div>
+                    <div class="weather-icon-large">
+                        {{ getWeatherIcon(weatherData()?.description || '') }}
+                    </div>
+                </div>
+
+                <div class="temperature-section">
+                    <div class="current-temp">
+                        <span class="temp-value">{{ weatherData()?.temperature }}°</span>
+                        <span class="temp-unit">C</span>
+                    </div>
+                    <div class="feels-like">
+                        Feels like {{ weatherData()?.feelsLike }}°C
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Details Grid -->
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon">💧</div>
+                    <div class="detail-info">
+                        <span class="detail-label">Humidity</span>
+                        <span class="detail-value">{{ weatherData()?.humidity }}%</span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-icon">💨</div>
+                    <div class="detail-info">
+                        <span class="detail-label">Wind Speed</span>
+                        <span class="detail-value">{{ weatherData()?.windSpeed }} m/s</span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-icon">🌡️</div>
+                    <div class="detail-info">
+                        <span class="detail-label">Pressure</span>
+                        <span class="detail-value">{{ weatherData()?.pressure }} hPa</span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-icon">👁️</div>
+                    <div class="detail-info">
+                        <span class="detail-label">Visibility</span>
+                        <span class="detail-value">10 km</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Tips -->
+            <div class="weather-tips">
+                <h4 class="tips-title">💡 Weather Tips</h4>
+                <div class="tips-content">
+                    @if (weatherData()?.temperature && weatherData()?.temperature! < 10) { <p>❄️ It's cold outside!
+                        Don't forget to wear warm clothes.</p>
+                        } @else if (weatherData()?.temperature && weatherData()?.temperature! > 30) {
+                        <p>🔥 It's hot! Stay hydrated and avoid direct sunlight.</p>
+                        } @else {
+                        <p>🌿 Pleasant weather! Perfect for outdoor activities.</p>
+                        }
+
+                        @if (weatherData()?.humidity && weatherData()?.humidity! > 70) {
+                        <p>💧 High humidity detected. You might feel sticky today.</p>
+                        }
+
+                        @if (weatherData()?.windSpeed && weatherData()?.windSpeed! > 10) {
+                        <p>🌬️ Strong winds today! Secure loose objects outdoors.</p>
+                        }
+                </div>
+            </div>
+        </div>
+        }
+
+
+
+        <!-- Empty State -->
+        @if (!weatherData() && !loading() && !error()) {
+        <div class="empty-state">
+            <div class="empty-content">
+                <div class="empty-icon">🌍</div>
+                <h3>Search for Weather</h3>
+                <p>Enter a city or country name above to get current weather conditions</p>
+                <div class="example-searches">
+                    <span>Try: London</span>
+                    <span>Japan</span>
+                    <span>New York</span>
+                    <span>Australia</span>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+
+
+
+</div>
